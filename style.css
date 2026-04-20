@@ -1,0 +1,47 @@
+/* التعديل المطلوب لظهور مثالي على الكمبيوتر والهاتف */
+.grid {
+    display: grid;
+    padding: 20px 6% 150px;
+    /* هذا السطر هو السر: يجعل البطاقات بحد أدنى 180px وتتمدد لتملأ الشاشة تلقائياً */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    justify-content: center;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    height: 100%;
+    /* لضمان تساوي طول البطاقات */
+}
+
+/* تأثير عند مرور الماوس (خاص بالكمبيوتر) */
+@media (underline: none) {
+    .card:hover {
+        border-color: var(--accent);
+        transform: translateY(-8px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    }
+}
+
+.card-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    background: #000;
+}
+
+/* تعديل عرض الحاوية في الشاشات الكبيرة جداً */
+@media (min-width: 1200px) {
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+}
