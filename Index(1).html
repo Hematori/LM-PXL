@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lusmody | V23.0</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #050505; --surface: #0a0a0a; --card: #121212;
+            --accent: #2ecc71; --accent-glow: rgba(46, 204, 113, 0.15);
+            --text-p: #ffffff; --text-s: #888888;
+            --border: #1f1f1f; --radius: 20px;
+            --premium: #4caf50; --cracked: #f44336; --fav: #e91e63;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        [lang="ar"] { font-family: 'Cairo', sans-serif; }
+        [lang="en"] { font-family: 'Inter', sans-serif; }
+
+        body { background: var(--bg); color: var(--text-p); overflow-x: hidden; scroll-behavior: smooth; min-height: 100vh; line-height: 1.6; }
+        ::-webkit-scrollbar { width: 0; }
+
+        /* Header */
+        .lus-header {
+            position: fixed; top: 0; width: 100%; z-index: 2000;
+            background: #000; border-bottom: 1px solid var(--border);
+            padding: 15px 6%; display: flex; justify-content: space-between; align-items: center;
+        }
+        .brand { font-weight: 900; font-size: 1.3rem; letter-spacing: -0.5px; }
+        .brand span { color: var(--accent); }
+
+        .header-tools { display: flex; gap: 8px; }
+        .tool-btn { 
+            background: var(--card); border: 1px solid var(--border); color: #fff; 
+            width: 38px; height: 38px; border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; position: relative; font-size: 0.9rem;
+        }
+        #fav-num { position: absolute; top: -5px; right: -5px; background: var(--fav); font-size: 0.6rem; padding: 2px 5px; border-radius: 5px; font-weight: 900; }
+
+        /* Navigation & Categories */
+        .cat-container { padding: 80px 6% 5px; background: var(--bg); position: sticky; top: 0; z-index: 1500; }
+        .cat-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+        .cat-chip {
+            padding: 8px 18px; background: var(--card); border: 1px solid var(--border);
+            border-radius: 50px; white-space: nowrap; font-size: 0.8rem; font-weight: 700; color: var(--text-s);
+        }
+        .cat-chip.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        /* Search */
+        .search-wrap { padding: 10px 6%; position: relative; }
+        .lus-input {
+            width: 100%; padding: 15px 20px; padding-left: 45px; background: var(--card);
+            border: 1px solid var(--border); border-radius: 15px; color: #fff; font-size: 0.9rem; outline: none;
+        }
+        [dir="rtl"] .lus-input { padding-left: 20px; padding-right: 45px; }
+        .search-icon { position: absolute; left: 9%; top: 50%; transform: translateY(-50%); color: var(--text-s); }
+        [dir="rtl"] .search-icon { left: auto; right: 9%; }
+
+        /* Grid */
+        .grid { display: grid; padding: 15px 6% 100px; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 12px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; position: relative; }
+        .card-img-wrap { width: 100%; aspect-ratio: 1/1; background: #000; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; }
+        .card-body { padding: 10px; }
+        .card-title { font-weight: 700; font-size: 0.8rem; height: 2.5em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+        .fav-btn { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5; font-size: 0.8rem; }
+        .fav-btn.active { color: var(--fav); }
+
+        /* Modal */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; padding: 15px; overflow-y: auto; justify-content: center; }
+        .modal { background: var(--surface); width: 100%; max-width: 400px; border-radius: 25px; padding: 20px; border: 1px solid var(--border); margin-top: 40px; position: relative; height: fit-content; }
+        .close-btn { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--card); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); }
+
+        .m-head { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
+        .m-icon { width: 60px; height: 60px; border-radius: 12px; object-fit: contain; }
+        .m-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+        .stat-box { background: var(--card); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid var(--border); font-size: 0.65rem; color: var(--text-s); }
+        .stat-box b { display: block; color: var(--accent); font-size: 0.8rem; }
+
+        .step-label { font-size: 0.7rem; color: var(--accent); font-weight: 900; margin-bottom: 10px; display: block; }
+        .opt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; max-height: 180px; overflow-y: auto; }
+        .opt-item { background: var(--card); border: 1px solid var(--border); padding: 10px 5px; border-radius: 10px; text-align: center; font-size: 0.7rem; font-weight: 700; cursor: pointer; }
+        .opt-item.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+
+        .btn-download { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 900; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+
+        /* Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; padding: 10px 10%; display: flex; justify-content: space-around; border-top: 1px solid var(--border); z-index: 2000; }
+        .nav-item { color: var(--text-s); font-size: 1.2rem; cursor: pointer; }
+        .nav-item.active { color: var(--accent); }
+
+        .l-badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; font-weight: 900; color: #000; margin-bottom: 5px; display: inline-block; }
+        .l-premium { background: var(--premium); } .l-cracked { background: var(--cracked); color: #fff; } .l-mobile { background: #2196f3; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <header class="lus-header">
+        <div class="brand">Lus<span>mody</span></div>
+        <div class="header-tools">
+            <div class="tool-btn" onclick="core.toggleLang()" id="lang-btn">AR</div>
+            <div class="tool-btn" onclick="core.showFavorites()"><i class="fas fa-heart"></i><span id="fav-num">0</span></div>
+            <div class="tool-btn" onclick="location.reload()"><i class="fas fa-redo-alt"></i></div>
+        </div>
+    </header>
+
+    <div class="cat-container">
+        <div class="cat-scroll" id="cat-list"></div>
+    </div>
+
+    <div class="search-wrap">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="main-search" class="lus-input" placeholder="Search projects...">
+    </div>
+
+    <main class="grid" id="main-grid"></main>
+
+    <div id="scroll-anchor" style="padding: 30px; text-align: center; display: none;">
+        <i class="fas fa-circle-notch fa-spin fa-xl" style="color: var(--accent);"></i>
+    </div>
+
+    <div class="overlay" id="modal-overlay" onclick="if(event.target === this) core.closeModal()">
+        <div class="modal">
+            <div class="close-btn" onclick="core.closeModal()"><i class="fas fa-times"></i></div>
+            <div class="m-head">
+                <img id="m-img" src="" class="m-icon">
+                <div>
+                    <h3 id="m-title">--</h3>
+                    <span id="m-author" style="color: var(--accent); font-size: 0.7rem;">...</span>
+                </div>
+            </div>
+            <div class="m-stats">
+                <div class="stat-box"><b id="m-dl">0</b><span data-t="downloads">Downloads</span></div>
+                <div class="stat-box"><b id="m-update">--</b><span data-t="updated">Updated</span></div>
+                <div class="stat-box"><b id="m-followers">0</b><span data-t="followers">Followers</span></div>
+            </div>
+            
+            <span class="step-label" data-t="step1">1. Select Game Version</span>
+            <div id="gv-grid" class="opt-grid"></div>
+            
+            <div id="loader-section" style="display:none;">
+                <span class="step-label" data-t="step2">2. Select Loader</span>
+                <div id="loader-grid" class="opt-grid"></div>
+            </div>
+            
+            <button class="btn-download" id="btn-final-dl" style="display:none;"><i class="fas fa-download"></i> <span data-t="dl_btn">Download Now</span></button>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="core.switchTab('home', this)"><i class="fas fa-home"></i></div>
+        <div class="nav-item" onclick="core.showFavorites(); core.switchTab('fav', this)"><i class="fas fa-heart"></i></div>
+    </nav>
+
+    <script>
+        const I18N = {
+            en: {
+                search: "Search projects...",
+                cats: { all: "Explore", mod: "Mods", modpack: "Modpacks", resourcepack: "Resource", shader: "Shaders", launcher: "Launchers" },
+                stats: { downloads: "Downloads", updated: "Updated", followers: "Followers", dl_btn: "Download Now", by: "By: ", step1: "1. Select Game Version", step2: "2. Select Loader" },
+                launch: { premium: "Premium", cracked: "Cracked", mobile: "Android" }
+            },
+            ar: {
+                search: "ابحث عن المشاريع...",
+                cats: { all: "اكتشف", mod: "مودات", modpack: "مودباكات", resourcepack: "ريسورس", shader: "شادرات", launcher: "لانشرات" },
+                stats: { downloads: "تحميل", updated: "تحديث", followers: "متابع", dl_btn: "تحميل الآن", by: "بواسطة: ", step1: "1. اختر إصدار اللعبة", step2: "2. اختر المشغل" },
+                launch: { premium: "رسمي", cracked: "مكرك", mobile: "أندرويد" }
+            }
+        };
+
+        const LAUNCHERS = [
+            { title: "SKLauncher", type: "cracked", i: "https://skmedix.pl/assets/img/sklauncher/icon.png", u: "https://skmedix.pl/sklauncher/downloads" },
+            { title: "Official Launcher", type: "premium", i: "https://www.minecraft.net/favicon.ico", u: "https://www.minecraft.net/download" },
+            { title: "PojavLauncher", type: "mobile", i: "https://pojavlauncher.org/favicon.ico", u: "https://github.com/PojavLauncherTeam/PojavLauncher/releases" }
+        ];
+
+        class LusmistEngine {
+            constructor() {
+                this.lang = localStorage.getItem('lus-lang') || 'en';
+                this.state = { page: 0, query: '', type: '', loading: false, hasMore: true, favorites: JSON.parse(localStorage.getItem('lus-favs') || '[]'), currentVersions: [], selection: { gv: null } };
+                this.init();
+            }
+
+            init() {
+                this.applyLang();
+                this.updateFavUI();
+                this.fetchData();
+                this.bindEvents();
+            }
+
+            toggleLang() {
+                this.lang = this.lang === 'en' ? 'ar' : 'en';
+                localStorage.setItem('lus-lang', this.lang);
+                this.applyLang();
+                this.resetGrid();
+            }
+
+            applyLang() {
+                const t = I18N[this.lang];
+                document.documentElement.lang = this.lang;
+                document.documentElement.dir = this.lang === 'ar' ? 'rtl' : 'ltr';
+                document.getElementById('lang-btn').innerText = this.lang === 'en' ? 'AR' : 'EN';
+                document.getElementById('main-search').placeholder = t.search;
+                const catList = document.getElementById('cat-list');
+                catList.innerHTML = Object.entries(t.cats).map(([key, val]) => `
+                    <div class="cat-chip ${this.state.type === (key==='all'?'':key) ? 'active' : ''}" 
+                         onclick="core.setCat(this, '${key==='all'?'':key}')">${val}</div>
+                `).join('');
+                document.querySelectorAll('[data-t]').forEach(el => { el.innerText = t.stats[el.dataset.t]; });
+            }
+
+            setCat(el, type) {
+                document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+                el.classList.add('active');
+                this.state.type = type;
+                this.resetGrid();
+            }
+
+            bindEvents() {
+                document.getElementById('main-search').oninput = (e) => {
+                    this.state.query = e.target.value;
+                    clearTimeout(this.timer);
+                    this.timer = setTimeout(() => this.resetGrid(), 600);
+                };
+                window.onscroll = () => {
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) this.fetchData();
+                };
+            }
+
+            async fetchData() {
+                if (this.state.loading || !this.state.hasMore) return;
+                if (this.state.type === 'launcher') return this.renderLaunchers();
+
+                this.state.loading = true;
+                document.getElementById('scroll-anchor').style.display = 'block';
+                const facet = this.state.type ? `&facets=${encodeURIComponent(JSON.stringify([[`project_type:${this.state.type}`]]))}` : '';
+                const url = `https://api.modrinth.com/v2/search?query=${this.state.query}&offset=${this.state.page * 20}&limit=20${facet}`;
+
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    this.state.hasMore = data.hits.length === 20;
+                    this.renderCards(data.hits);
+                    this.state.page++;
+                } catch(e) { console.error(e); } 
+                finally {
+                    this.state.loading = false;
+                    document.getElementById('scroll-anchor').style.display = 'none';
+                }
+            }
+
+            renderCards(hits, append = true) {
+                const grid = document.getElementById('main-grid');
+                if (!append) grid.innerHTML = '';
+                hits.forEach(hit => {
+                    const id = hit.project_id || hit.id;
+                    const isFav = this.state.favorites.some(f => f.id === id);
+                    const div = document.createElement('div');
+                    div.className = 'card';
+                    div.innerHTML = `
+                        <div class="fav-btn ${isFav?'active':''}" onclick="core.toggleFav(event, '${id}', '${hit.title.replace(/'/g,"")}', '${hit.icon_url}')"><i class="fas fa-heart"></i></div>
+                        <div onclick="core.openProject('${id}')">
+                            <div class="card-img-wrap"><img src="${hit.icon_url}" class="card-img" loading="lazy"></div>
+                            <div class="card-body"><div class="card-title">${hit.title}</div></div>
+                        </div>`;
+                    grid.appendChild(div);
+                });
+            }
+
+            renderLaunchers() {
+                const grid = document.getElementById('main-grid');
+                const t = I18N[this.lang].launch;
+                grid.innerHTML = '';
+                LAUNCHERS.forEach(l => {
+                    const div = document.createElement('div');
+                    div.className = 'card'; div.style.padding = '20px'; div.style.textAlign = 'center';
+                    div.onclick = () => window.open(l.u);
+                    div.innerHTML = `<img src="${l.i}" style="width:50px;margin-bottom:10px;"><br><span class="l-badge l-${l.type}">${t[l.type]}</span><div class="card-title">${l.title}</div>`;
+                    grid.appendChild(div);
+                });
+                this.state.hasMore = false;
+            }
+
+            async openProject(id) {
+                document.getElementById('modal-overlay').style.display = 'flex';
+                this.resetModalUI();
+                const t = I18N[this.lang].stats;
+                try {
+                    const [p, v] = await Promise.all([
+                        fetch(`https://api.modrinth.com/v2/project/${id}`).then(r => r.json()),
+                        fetch(`https://api.modrinth.com/v2/project/${id}/version`).then(r => r.json())
+                    ]);
+                    this.state.currentVersions = v;
+                    document.getElementById('m-title').innerText = p.title;
+                    document.getElementById('m-img').src = p.icon_url;
+                    document.getElementById('m-author').innerText = `${t.by}${p.author || 'Dev'}`;
+                    document.getElementById('m-dl').innerText = this.formatNum(p.downloads);
+                    document.getElementById('m-update').innerText = new Date(p.updated).toLocaleDateString(this.lang==='ar'?'ar-EG':'en-US');
+                    
+                    const gvSet = [...new Set(v.flatMap(x => x.game_versions))]
+                                  .filter(gv => /^\d+\.\d+(\.\d+)?$/.test(gv))
+                                  .sort((a,b) => b.localeCompare(a, undefined, {numeric: true}));
+                    
+                    document.getElementById('gv-grid').innerHTML = gvSet.map(g => `<div class="opt-item" onclick="core.selectGV(this, '${g}')">${g}</div>`).join('');
+                } catch(e) { this.closeModal(); }
+            }
+
+            selectGV(el, gv) {
+                document.querySelectorAll('#gv-grid .opt-item').forEach(i => i.classList.remove('active'));
+                el.classList.add('active');
+                this.state.selection.gv = gv;
+                const loaders = [...new Set(this.state.currentVersions.filter(v => v.game_versions.includes(gv)).flatMap(v => v.loaders))];
+                document.getElementById('loader-section').style.display = 'block';
+                document.getElementById('loader-grid').innerHTML = loaders.map(l => `<div class="opt-item" onclick="core.selectL(this, '${l}')">${l.toUpperCase()}</div>`).join('');
+                document.getElementById('btn-final-dl').style.display = 'none';
+            }
+
+            selectL(el, l) {
+                document.querySelectorAll('#loader-grid .opt-item').forEach(i => i.classList.remove('active'));
+                el.classList.add('active');
+                const ver = this.state.currentVersions.find(v => v.game_versions.includes(this.state.selection.gv) && v.loaders.includes(l));
+                if (ver && ver.files[0]) {
+                    const btn = document.getElementById('btn-final-dl');
+                    btn.style.display = 'flex';
+                    btn.onclick = () => window.open(ver.files[0].url);
+                }
+            }
+
+            toggleFav(e, id, title, icon) {
+                e.stopPropagation();
+                const idx = this.state.favorites.findIndex(f => f.id === id);
+                if (idx > -1) this.state.favorites.splice(idx, 1);
+                else this.state.favorites.push({ id, title, icon_url: icon });
+                localStorage.setItem('lus-favs', JSON.stringify(this.state.favorites));
+                this.updateFavUI();
+                e.currentTarget.classList.toggle('active');
+            }
+
+            showFavorites() { this.state.type = 'fav'; this.renderCards(this.state.favorites, false); }
+            updateFavUI() { document.getElementById('fav-num').innerText = this.state.favorites.length; }
+            resetGrid() { this.state.page = 0; this.state.hasMore = true; document.getElementById('main-grid').innerHTML = ''; this.fetchData(); }
+            resetModalUI() {
+                document.getElementById('gv-grid').innerHTML = '...';
+                document.getElementById('loader-section').style.display = 'none';
+                document.getElementById('btn-final-dl').style.display = 'none';
+            }
+            closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+            formatNum(n) { return n >= 1000 ? (n/1000).toFixed(1) + 'K' : n; }
+            switchTab(t, el) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+                if (t === 'home') this.resetGrid();
+            }
+        }
+        const core = new LusmistEngine();
+    </script>
+</body>
+</html>
